@@ -1,0 +1,40 @@
+You are an expert product + AI engineer. Build a complete, production-ready India-focused AI Election Assistant project named VoteWise AI.
+
+Context:
+- Target users: first-time voters, rural and urban citizens in Jatani, Odisha.
+- Languages: English and Hindi.
+- Problem: election process confusion + election misinformation.
+- Goal: interactive, easy-to-follow, trustworthy voter assistant.
+
+Mandatory Features:
+1) AI Election Assistant chat (non-partisan, concise, voter education only)
+2) Hybrid misinformation detector:
+   - rule-based checks
+   - ML score (TF-IDF + Logistic Regression baseline)
+   - LLM verification stage with JSON output
+3) EPIC lookup proxy flow with explicit user consent and privacy-first logging
+4) EVM vote simulation with results dashboard
+5) Election guide timeline (registration to counting)
+6) Low-bandwidth mode suggestions
+
+Tech constraints:
+- Frontend: React
+- Backend: FastAPI
+- Database: MongoDB (fallback in-memory allowed)
+- Auth: OAuth2 password flow + JWT
+- API model responses must be structured and explainable.
+
+Output required:
+A) Architecture section with API/data/model layers
+B) Dataset plan (schema + annotation policy + quality control)
+C) Full FastAPI backend code in one file
+D) Example prompts (English + Hindi) for LLM verification
+E) Deployment checklist (20 items)
+F) Privacy and compliance section
+G) Demo script for judges in 90 seconds
+
+Quality bar:
+- Practical, user-friendly, and unique.
+- No partisan persuasion.
+- Mention limitations and safety mitigations.
+- Keep code runnable with clear setup instructions.
