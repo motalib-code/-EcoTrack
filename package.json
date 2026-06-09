@@ -1,0 +1,15 @@
+{
+  "name": "ecotrack",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node build/build.js"
+  },
+  "devDependencies": {
+    "clean-css": "5.3.3",
+    "html-minifier-terser": "7.2.0",
+    "purgecss": "8.0.0",
+    "sharp": "0.34.5",
+    "terser": "5.48.0"
+  }
+}

@@ -27,6 +27,14 @@ EcoTrack provides a beautiful landing experience with a live dashboard, carbon f
 2. Open `index.html` in your browser.
 3. Optionally, host the project from a local web server for faster loading and asset support.
 
+### Production Build (Minified + Purged)
+
+1. Install dependencies:
+   - `npm install`
+2. Build optimized output:
+   - `npm run build`
+3. Deploy the generated `dist/` directory to static hosting (GitHub Pages workflow is included).
+
 ## Project Structure
 
 - `index.html` - Main application page
