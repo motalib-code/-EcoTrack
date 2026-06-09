@@ -755,6 +755,17 @@
         </div>
     </footer>
 
+    <script type="module">
+        import { getLatestResult } from './js/storage.js';
+
+        const latest = getLatestResult();
+        if (latest) {
+            const heroCo2 = document.querySelector('.hero-stat-number[data-target="2400"]');
+            if (heroCo2) heroCo2.setAttribute('data-target', Math.round(latest.total * 12));
+            const heroReducible = document.querySelector('.hero-stat-number[data-target="35"]');
+            if (heroReducible && latest.reducible !== undefined) heroReducible.setAttribute('data-target', latest.reducible);
+        }
+    </script>
     <script src="app.js"></script>
 </body>
 </html>

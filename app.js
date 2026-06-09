@@ -212,6 +212,13 @@ function calculateFootprint() {
         updateDashboardFromResults(results);
         updateInsightsFromResults(results);
 
+        // Save calculation result
+        import('./js/storage.js').then(module => {
+            module.saveCalculation(results);
+        }).catch(err => {
+            console.error('Failed to load storage module:', err);
+        });
+
         btn.classList.remove('loading');
         btn.innerHTML = '<span>Recalculate</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
     }, 1500);
@@ -366,12 +373,39 @@ function getRating(total) {
 // ============================================
 function initDashboard() {
     // Set initial demo values with animation
-    const demoData = {
+    let demoData = {
         transport: 145,
         energy: 198,
         food: 167,
         total: 510
     };
+
+    // Load from storage if available
+    try {
+        const storage = localStorage.getItem('ecotrack_history') || localStorage.getItem('ecotrack_data');
+        if (storage) {
+            const history = JSON.parse(storage);
+            if (history && history.length > 0) {
+                const latest = history[history.length - 1];
+                demoData = {
+                    transport: latest.transport || demoData.transport,
+                    energy: latest.energy || demoData.energy,
+                    food: latest.food || demoData.food,
+                    total: latest.total || demoData.total
+                };
+
+                const reducible = latest.reducible !== undefined ? latest.reducible : 35; // Default to 35% if not present
+
+                const heroStats = document.querySelectorAll('.hero-stat-number');
+                if (heroStats.length >= 2) {
+                    heroStats[0].setAttribute('data-target', Math.round(latest.total * 12)); // Annual
+                    heroStats[1].setAttribute('data-target', reducible);
+                }
+            }
+        }
+    } catch (e) {
+        console.error("Could not load latest result", e);
+    }
 
     setTimeout(() => {
         animateNumber(document.getElementById('stat-transport-value'), 0, demoData.transport, 2000);
