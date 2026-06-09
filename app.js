@@ -835,3 +835,12 @@ function initThemeToggle() {
         }
     });
 }
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        computeEmissions,
+        getRating,
+        updateInsightDescriptions,
+        updateInsightsFromResults
+    };
+}
