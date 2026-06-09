@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initHeroAnimations();
     initCalculator();
     initDashboard();
-    initCharts();
+    initChartLoader();
+    applyImageLazyAttributes();
     initScrollAnimations();
     initCounterAnimations();
 });
@@ -483,17 +484,66 @@ function updateInsightDescriptions(results, scores) {
 // ============================================
 let breakdownChart = null;
 let trendChart = null;
+let ChartConstructor = null;
+let chartInitPromise = null;
+let pendingChartResults = null;
+
+function initChartLoader() {
+    const dashboardSection = document.getElementById('dashboard');
+    if (!dashboardSection) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                initializeChartsWhenNeeded();
+                observer.disconnect();
+            }
+        });
+    }, { rootMargin: '250px 0px', threshold: 0.1 });
+
+    observer.observe(dashboardSection);
+}
+
+async function initializeChartsWhenNeeded() {
+    if (breakdownChart || trendChart) return;
+    if (!chartInitPromise) {
+        chartInitPromise = (async () => {
+            try {
+                await loadChartLibrary();
+                initCharts();
+                if (pendingChartResults) {
+                    applyChartUpdates(pendingChartResults);
+                }
+            } catch (error) {
+                console.error('Unable to load chart library:', error);
+            } finally {
+                chartInitPromise = null;
+            }
+        })();
+    }
+
+    await chartInitPromise;
+}
+
+async function loadChartLibrary() {
+    if (ChartConstructor) return;
+
+    const chartModule = await import('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/+esm');
+    ChartConstructor = chartModule.Chart;
+}
 
 function initCharts() {
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.font.family = 'Inter, sans-serif';
-    Chart.defaults.plugins.legend.labels.padding = 16;
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    if (!ChartConstructor) return;
+
+    ChartConstructor.defaults.color = '#94a3b8';
+    ChartConstructor.defaults.font.family = 'Inter, sans-serif';
+    ChartConstructor.defaults.plugins.legend.labels.padding = 16;
+    ChartConstructor.defaults.plugins.legend.labels.usePointStyle = true;
 
     // Breakdown Doughnut Chart
     const breakdownCtx = document.getElementById('chart-breakdown');
     if (breakdownCtx) {
-        breakdownChart = new Chart(breakdownCtx, {
+        breakdownChart = new ChartConstructor(breakdownCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Transport', 'Energy', 'Food', 'Lifestyle'],
@@ -552,7 +602,7 @@ function initCharts() {
         gradient.addColorStop(0, 'rgba(0, 212, 170, 0.3)');
         gradient.addColorStop(1, 'rgba(0, 212, 170, 0)');
 
-        trendChart = new Chart(trendCtx, {
+        trendChart = new ChartConstructor(trendCtx, {
             type: 'line',
             data: {
                 labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -621,6 +671,17 @@ function initCharts() {
 }
 
 function updateCharts(results) {
+    pendingChartResults = results;
+
+    if (!breakdownChart && !trendChart) {
+        initializeChartsWhenNeeded();
+        return;
+    }
+
+    applyChartUpdates(results);
+}
+
+function applyChartUpdates(results) {
     if (breakdownChart) {
         breakdownChart.data.datasets[0].data = [
             results.transport,
@@ -711,6 +772,12 @@ function initCounterAnimations() {
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
+function applyImageLazyAttributes() {
+    document.querySelectorAll('img').forEach(img => {
+        img.setAttribute('loading', 'lazy');
+        img.setAttribute('decoding', 'async');
+    });
+}
 
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
