@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCalculator();
     initDashboard();
     initChartLoader();
-    initLazyImages();
+    applyImageLazyAttributes();
     initScrollAnimations();
     initCounterAnimations();
 });
@@ -772,7 +772,7 @@ function initCounterAnimations() {
 // ============================================
 // UTILITY FUNCTIONS
 // ============================================
-function initLazyImages() {
+function applyImageLazyAttributes() {
     document.querySelectorAll('img').forEach(img => {
         img.setAttribute('loading', 'lazy');
         img.setAttribute('decoding', 'async');
